@@ -31,11 +31,61 @@
 
 <button onclick="clickMoney()">Click</button>
 <button onclick="buyUpgrade()">Upgrade (Cost: <span id="cost">10</span>)</button>
-
 <script>
 let money = 0;
 let income = 1;
+let passiveIncome = 0;
 let cost = 10;
+
+// LOAD SAVE
+if (localStorage.getItem("save")) {
+    let save = JSON.parse(localStorage.getItem("save"));
+    money = save.money;
+    income = save.income;
+    passiveIncome = save.passiveIncome;
+    cost = save.cost;
+}
+
+function update() {
+    document.getElementById("money").innerText = Math.floor(money);
+    document.getElementById("cost").innerText = cost;
+}
+
+// CLICK
+function clickMoney() {
+    money += income;
+    update();
+}
+
+// UPGRADE
+function buyUpgrade() {
+    if (money >= cost) {
+        money -= cost;
+        income++;
+        passiveIncome += 0.5; // jetzt auch automatisch Geld!
+        cost = Math.floor(cost * 1.5);
+        update();
+    }
+}
+
+// PASSIVE INCOME LOOP
+setInterval(() => {
+    money += passiveIncome;
+    update();
+}, 1000);
+
+// AUTO SAVE
+setInterval(() => {
+    localStorage.setItem("save", JSON.stringify({
+        money,
+        income,
+        passiveIncome,
+        cost
+    }));
+}, 2000);
+
+update();
+</script>
 
 function update() {
     document.getElementById("money").innerText = money;
